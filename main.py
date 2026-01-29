@@ -30,8 +30,8 @@ def verify_user(uid: int):
     f = open('auth.json',)
     auth = json.load(f)
     f.close()
-    auth = str.split(auth[uid], ',')
-    access = client.from_access_token(auth[0])
+    auth_token = str.split(auth[uid], ',')
+    access = client.from_access_token(auth_token[0])
     f = open('user_info.json',)
     data = json.load(f)
     f.close()
@@ -115,8 +115,9 @@ async def ungban(interaction: discord.Interaction, uid: discord.User, reason: st
             f.close()
             guilds = [guild.id for guild in bot.guilds]
             for gid in guilds:
-                time.sleep(1)
+                time.sleep(0.3)
                 guild = bot.get_guild(gid)
+                print(f"unbanning {uid} in guild {guild.name}({guild.id})")
                 await(guild.unban(user=uid, reason=f"unbaned by global ban system for the reason of: {reason} (note we will nerver unban someone that was not banned by us)"))
         else:
             await interaction.followup.send(f"{uid} is not gbaned")
