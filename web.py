@@ -20,6 +20,8 @@ def auth():
     data = json.load(f)
     f.close()
     info = token.fetch_identify()
+    if info['id'] in data:
+        return "already verified"
     data[info['id']] = f"{token.token},{token.refresh_token}"
     f = open('auth.json', 'w')
     json.dump(data, f)
