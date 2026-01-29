@@ -42,6 +42,10 @@ def verify_user(uid: int):
     f = open('user_info.json', 'w')
     json.dump(data, f)
     f.close()
+    auth.pop(str(uid))
+    f = open('auth.json', 'w')
+    json.dump(auth, f)
+    f.close()
     
 
 async def gban_ban(uid: discord.User, reason: str):
@@ -147,10 +151,9 @@ async def verify_setup(interaction: discord.Interaction, channel: discord.TextCh
         color=discord.Color.green(),
     )
     class VerifyButton(discord.ui.View):
-        @discord.ui.button(label="Verify", style=discord.ButtonStyle.green)
-        async def verify(self, interaction: discord.Interaction, button: discord.ui.Button, url="http://localhost:8080/auth"):
-            await interaction.response.send_message(f"finish verfying in your browser", ephemeral=True)
-
+        def __init__(self):
+            super().__init__()
+            self.add_item(discord.ui.Button(label="Verify", style=discord.ButtonStyle.url, url=client.generate_uri(scope=["connections", "identify"])))
 
     await channel.send(embed=embed, view=VerifyButton())
     await interaction.response.send_message(f"Verification setup complete in {channel.mention} with role {role.mention}", ephemeral=True)
@@ -170,7 +173,7 @@ async def on_ready():
             print(f"banning {uid} in guild {guild.name}({guild.id})")
             user = await bot.fetch_user(int(uid))
             await(guild.ban(user=user, reason=f"baned by the global ban system for the reason of: {data[uid]}"))
-            time.sleep(1)
+            time.sleep(.3)
 
 @bot.event
 async def on_guild_join(guild):
