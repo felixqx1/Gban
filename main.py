@@ -42,6 +42,7 @@ def verify_user(uid: int):
     f = open('user_info.json', 'w')
     json.dump(data, f)
     f.close()
+    
 
 async def gban_ban(uid: discord.User, reason: str):
         f = open('bans.json',)
@@ -145,12 +146,14 @@ async def verify_setup(interaction: discord.Interaction, channel: discord.TextCh
         description="Click the button below to verify yourself and gain access to the server!",
         color=discord.Color.green(),
     )
-    #class VerifyButton(discord.ui.View):
-      #  @discord.ui.button(label="Verify", style=discord.ButtonStyle.green)
-        #async def verify(self, interaction: discord.Interaction, button: discord.ui.Button):
+    class VerifyButton(discord.ui.View):
+        @discord.ui.button(label="Verify", style=discord.ButtonStyle.green)
+        async def verify(self, interaction: discord.Interaction, button: discord.ui.Button, url="http://localhost:8080/auth"):
+            await interaction.response.send_message(f"finish verfying in your browser", ephemeral=True)
 
-    #await channel.send(embed=embed, view=VerifyButton())
-    #await interaction.response.send_message(f"Verification setup complete in {channel.mention} with role {role.mention}", ephemeral=True)
+
+    await channel.send(embed=embed, view=VerifyButton())
+    await interaction.response.send_message(f"Verification setup complete in {channel.mention} with role {role.mention}", ephemeral=True)
 
 @bot.event
 async def on_ready():
