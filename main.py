@@ -89,7 +89,7 @@ async def gban(interaction: discord.Interaction, uid: discord.User, reason: str,
         await interaction.response.send_message(f"baning {uid}({uid.id})...")
         await gban_ban(uid, reason)
         await interaction.followup.send(f"baned {uid}({uid.id}) for the reason of: {reason}\nproof: {proof.url}")
-    elif interaction.user.id == 1379222794516172831:
+    elif interaction.user.id == 1379222794516172831: #ester egg from when someone tryed to gban me
         await interaction.response.send_message("dont even try it bitch :D")
     else:
         await interaction.response.send_message("You do not have permission to use this command.")
