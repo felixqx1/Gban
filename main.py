@@ -141,6 +141,13 @@ async def ungban(interaction: discord.Interaction, uid: discord.User, reason: st
                         time.sleep(0.3)
                         guild = bot.get_guild(gid)
                         user = await bot.fetch_user(int(i))
+                        f = open('bans.json',)
+                        data = json.load(f)
+                        f.close()
+                        data.pop(str(user.id))
+                        f = open('bans.json', 'w')
+                        json.dump(data, f)
+                        f.close()
                         try:
                             await(guild.unban(user=user, reason=f"unbaned by global ban system for the reason of: {reason} (note we will nerver unban someone that was not banned by us)"))
                         except discord.Forbidden:
