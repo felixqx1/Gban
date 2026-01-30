@@ -200,7 +200,7 @@ async def on_guild_join(guild):
         print(f"banning {uid} in guild {guild.name}({guild.id})")
         user = await bot.fetch_user(int(uid))
         await(guild.ban(user=user, reason=f"baned by the global ban system for the reason of: {data[uid]}"))
-        await(time.sleep(0.3))
+        await(time.sleep(.3))
 
 
 if __name__ == "__main__":
