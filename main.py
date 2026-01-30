@@ -71,24 +71,27 @@ async def gban_ban(uid: discord.User, reason: str):
             await(guild.ban(user=uid, reason=f"baned by the global ban system for the reason of: {reason}"))
         print(f"checking for shared accounts with {uid}({uid.id})")
 
+        linked = []
+
         if data[str(uid.id)]:
             for k,v in data.items():
                 print(f"checking {k} for shared accounts...")
+                if str(k) == str(uid.id):
+                    continue
                 for conn in v:
                     for conn1 in data[str(uid.id)]:
                         if conn == conn1:
-                            time.sleep(1)
+                            time.sleep(.1)
                             user = await bot.fetch_user(int(k))
                             f = open('bans.json',)
                             bans = json.load(f)
                             f.close()
-                            linked = []
                             for gid in guilds:
                                 guild = bot.get_guild(gid)
                                 time.sleep(.3)
                                 await guild.ban(user=user, reason=f"baned by the global ban system for the reason of: {reason} (note: this is a enforcment ban due to shared account info with a gbaned user)")
-                            linked.append(user.id)
-                            bans[str(user.id)] = f"{reason}-enforcement-ban"
+                            linked.append(str(k))
+                            bans[str(k)] = f"{reason}-(enforcement-ban)"
                             bans[f"{uid.id}-linked"] = linked
                             f = open('bans.json', 'w')
                             json.dump(bans, f)
@@ -126,14 +129,27 @@ async def ungban(interaction: discord.Interaction, uid: discord.User, reason: st
                 guild = bot.get_guild(gid)
                 print(f"unbanning {uid} in guild {guild.name}({guild.id})")
                 await(guild.unban(user=uid, reason=f"unbaned by global ban system for the reason of: {reason} (note we will nerver unban someone that was not banned by us)"))
+                print(f"unbanned {uid}({uid.id}) in guild {guild.name}({guild.id})")
             f = open('bans.json',)
             bans = json.load(f)
             f.close()
 
             if bans[f"{uid.id}-linked"]:
                 for i in bans[f"{uid.id}-linked"]:
-                    user = await bot.fetch_user(int(i))
-                    await(guild.unban(user=user, reason=f"unbaned by global ban system for the reason of: {reason} (note we will nerver unban someone that was not banned by us)"))
+                    guilds = [guild.id for guild in bot.guilds]
+                    for gid in guilds:
+                        time.sleep(0.3)
+                        guild = bot.get_guild(gid)
+                        user = await bot.fetch_user(int(i))
+                        try:
+                            await(guild.unban(user=user, reason=f"unbaned by global ban system for the reason of: {reason} (note we will nerver unban someone that was not banned by us)"))
+                        except discord.Forbidden:
+                            print(f"Failed to unban linked account {user}({user.id}) in guild {guild.name}({guild.id})")
+                        print(f"unbanning linked account {user}({user.id})")
+                bans.pop(f"{uid.id}-linked")
+                f = open('bans.json', 'w')
+                json.dump(bans, f)
+                f.close()
                     
         else:
             await interaction.followup.send(f"{uid} is not gbaned")
@@ -185,6 +201,8 @@ async def on_ready():
     for gid in guilds:
         guild = bot.get_guild(gid)
         for uid in data:
+            if uid.endswith("-linked"):
+                continue
             print(f"banning {uid} in guild {guild.name}({guild.id})")
             user = await bot.fetch_user(int(uid))
             await(guild.ban(user=user, reason=f"baned by the global ban system for the reason of: {data[uid]}"))
