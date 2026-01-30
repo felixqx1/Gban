@@ -86,9 +86,9 @@ async def gban_ban(uid: discord.User, reason: str):
                             for gid in guilds:
                                 guild = bot.get_guild(gid)
                                 time.sleep(.3)
-                                linked.append(user.id)
-                                bans[str(uid.id)] = f"{reason}-enforcement-ban"
                                 await guild.ban(user=user, reason=f"baned by the global ban system for the reason of: {reason} (note: this is a enforcment ban due to shared account info with a gbaned user)")
+                            linked.append(user.id)
+                            bans[str(user.id)] = f"{reason}-enforcement-ban"
                             bans[f"{uid.id}-linked"] = linked
                             f = open('bans.json', 'w')
                             json.dump(bans, f)
@@ -126,7 +126,7 @@ async def ungban(interaction: discord.Interaction, uid: discord.User, reason: st
                 guild = bot.get_guild(gid)
                 print(f"unbanning {uid} in guild {guild.name}({guild.id})")
                 await(guild.unban(user=uid, reason=f"unbaned by global ban system for the reason of: {reason} (note we will nerver unban someone that was not banned by us)"))
-           f = open('bans.json',)
+            f = open('bans.json',)
             bans = json.load(f)
             f.close()
 
